@@ -128,7 +128,7 @@ module Command
       puts
       # ファイルコピー
       src = ["AozoraEpub3.ini", "vertical_font.css"]
-      dst = ["AozoraEpub3.ini", "template/OPS/css_custom/vertical_font.css"]
+      dst = ["AozoraEpub3.ini", "template/item/style_custom/font.css"]
       puts "(次のファイルをコピーor上書きしました)"
       src.size.times do |i|
         src_full_path = File.join(Narou.preset_dir, src[i])
