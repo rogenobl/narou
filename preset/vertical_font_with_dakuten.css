@@ -1,12 +1,21 @@
 @charset "utf-8";
 @namespace "http://www.w3.org/1999/xhtml";
 
+/** 横書きフォント */
+.hltr body {
+font-family: "ＭＳ 明朝", "MS Mincho", "ヒラギノ明朝 ProN W3", "HiraMinProN-W3", serif, sans-serif;
+}
+/** 縦書きフォント */
+.vrtl body {
+font-family: "@ＭＳ 明朝", "@MS Mincho", "ヒラギノ明朝 ProN W3", "HiraMinProN-W3", serif, sans-serif;
+}
+
 body {
-	font-family: "@ＭＳ 明朝", "@MS Mincho", "ヒラギノ明朝 ProN W3", "HiraMinProN-W3", serif, sans-serif;
+	/* font-family: "@ＭＳ 明朝", "@MS Mincho", "ヒラギノ明朝 ProN W3", "HiraMinProN-W3", serif, sans-serif; */
 	line-height: <%= line_height %>em !important;
 }
 
-.gtc, .b {
+.vrtl .gtc, .vrtl .b {
 	font-family: '@ＭＳ ゴシック','@MS Gothic',sans-serif !important;
 }
 
