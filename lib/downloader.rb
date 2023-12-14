@@ -811,6 +811,8 @@ class Downloader
       @stream.error "何らかの理由により目次が取得できませんでした(#{e.message})"
     end
     false
+  ensure
+    save_raw_data(toc_source, {"index" => "0", "file_subtitle" => "index"}, ".html") rescue nil if toc_source
   end
 
   def __search_index_in_subtitles(subtitles, index)
