@@ -174,3 +174,5 @@ class SiteSetting
     false
   end
 end
+
+begin require_relative "sitesettinghandler"; rescue LoadError then nil end
