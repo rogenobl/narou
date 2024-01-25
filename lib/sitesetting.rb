@@ -6,6 +6,7 @@
 
 require "yaml"
 require_relative "narou/api"
+require_relative "sitesettinghandler"
 
 class SiteSetting
   NOVEL_SITE_SETTING_DIR = "webnovel/"
@@ -101,8 +102,11 @@ class SiteSetting
     keys.each do |key|
       setting_value = self[key] or next
       [*setting_value].each do |value|
-        match_data = source.match(/#{value}/m)
+        handle = SiteSettingHandler.handler(self, value)
+        match_data = handle&.match(source) # ハンドルオブジェクトを得て、それにより処理する
         if match_data
+          value = handle.value if handle.respond_to?(:value)
+                                           # 通常はこれまで通りだが、valueを変更することも可能にする
           @match_values[key] = value       # yamlのキーでもmatch_valuesに設定しておくが、
           update_match_values(match_data)  # ←ここで同名のグループ名が定義されていたら上書きされるので注意
                                            # 例えば、title: <title>(?<title>.+?)</title> と定義されていた場合、
@@ -174,5 +178,3 @@ class SiteSetting
     false
   end
 end
-
-begin require_relative "sitesettinghandler"; rescue LoadError then nil end
