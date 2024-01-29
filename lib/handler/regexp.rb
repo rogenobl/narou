@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../sitesettinghandler'
+require_relative "../sitesettinghandler"
 
 class RegexpMulti < SiteSettingHandler
   def match(source)
