@@ -13,6 +13,7 @@ class SiteSettingHandler
   class << self
     # @type : ハンドラのタイプ名
     attr_reader :type
+
     #
     # ハンドラを読み込む
     #
@@ -22,12 +23,13 @@ class SiteSettingHandler
     # add_handlerを呼んで定義したクラスを登録する事で有効になる
     #
     def load_handler(handler_dir: HANDLER_DIR)
-      Dir.glob(File.join(__dir__, handler_dir, "*"+HANDLER_EXT)) {|path|
+      Dir.glob(File.join(__dir__, handler_dir, "*#{HANDLER_EXT}")).sort.each { |path|
         @@current_path = path
         require path
         @@current_path = nil
       }
     end
+
     #
     # ハンドラを登録する
     #
@@ -40,6 +42,7 @@ class SiteSettingHandler
       @@klasses[@type] = klass
       puts "->#{__method__} #{@type} #{klass}" if DEBUG_PRINT
     end
+
     #
     # ハンドラの呼び出し
     #
@@ -91,41 +94,36 @@ class SiteSettingHandler
     @value = value
     @parent = parent
   end
-  #
+
   # ハンドラタイプ名
   # class_attribute :type, instance_writer: false
-  #
-  def type()
+  def type
     self.class.type
   end
-  #
+
   # 呼び出し元のオブジェクト
-  #
-  def parent()
+  def parent
     @parent&.weakref_alive? ? @parent : nil
   end
-  #
+
   # デバッグ表示用
-  #
-  def to_s()
+  def to_s
     "<#{self.class} @@type=#{self.type} @value=#{@value}>"
   end
+
   #
   # valueを定義すれば変更できる
-  #
-  #def value()
-  #  @value
-  #end
+  # def value()
+  #   @value
+  # end
   #
   # sourceから値が得られるかチェックし、得られるなら値をセットする
   # 継承したクラスにて実装する
-  #
-  #def match(source)
-  #  nil
-  #end
-  #
+  # def match(source)
+  #   nil
+  # end
+
   # matchが返すmatch_dataのためのクラス
-  #
   class PseudoMatchData < Hash
     attr_reader :post_match
 
@@ -135,8 +133,8 @@ class SiteSettingHandler
       replace(hash)
     end
 
-    def names()
-      keys.map {|k| k.to_s}
+    def names
+      keys.map(&:to_s)
     end
   end
 
