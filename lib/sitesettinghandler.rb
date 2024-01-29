@@ -9,7 +9,6 @@ class SiteSettingHandler
   DEBUG_PRINT = false
 
   @@klasses = {}
-  @@previousException = nil
 
   class << self
     # @type : ハンドラのタイプ名
@@ -25,12 +24,7 @@ class SiteSettingHandler
     def load_handler(handler_dir: HANDLER_DIR)
       Dir.glob(File.join(__dir__, handler_dir, "*"+HANDLER_EXT)) {|path|
         @@current_path = path
-        begin
-          require path
-        rescue ScriptError, StandardError => e
-          # 例外時、エラー内容は表示するが、処理は継続する
-          warn e.full_message.lines[0..2]
-        end
+        require path
         @@current_path = nil
       }
     end
@@ -80,10 +74,6 @@ class SiteSettingHandler
           _make_handler(parent, "regexp", value)
         end
       end
-    rescue => e
-      # 例外発生時、例外を記録するがnilを返して処理は続行する
-      @@previousException = e
-      nil
     end
 
     def _make_handler(parent, type, value)
@@ -95,10 +85,6 @@ class SiteSettingHandler
     # makeを再定義すれば別のインスタンスを返すことも可能
     alias make new
 
-    # cattr_reader :previousException
-    def previousException()
-      @@previousException
-    end
   end
 
   def initialize(value, parent)
