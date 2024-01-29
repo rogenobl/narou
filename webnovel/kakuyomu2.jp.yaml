@@ -76,16 +76,10 @@ code: &code
 title: &title
   - *code
   - ^title::(?<title>.+?)$
-  - <h1[^>]*><span[^>]*><a[^>]*>(?<title>.+?)</a></span></h1>
 author:
   - ^author::(?<author>.+?)$
-  - </h1><div><div[^>]*><div[^>]*><a href="/users/[^>]+>(?<author>.+?)</a></div></div></div>
 story: &story
   - ^introduction::(?<story>.+?)$
-  - (?x)
-    <div.class="CollapseTextWithKakuyomuLinks_collapseText[^>]*>
-      (?<story>.+?)
-    </div>
 
 # ------------------------------------------------------------
 # 目次取得設定
@@ -96,12 +90,6 @@ subtitles:
     ^(?:Chapter;1;\d+;(?<chapter>.+?)\n)?
     (?:Chapter;2;\d+;(?<subchapter>.+?)\n)?
     Episode;(?<index>\d+);(?<subupdate>.+?);(?<subtitle>.+?)$
-  - (?x)
-    "Episode:\d+":{
-      "__typename":"Episode",
-      "id":"(?<index>\d+)",
-      "title":"(?<subtitle>(?:[^"]|\\")+)",
-      "publishedAt":"(?<subupdate>[^"]+)"}
 href: /works/\\k<ncode>/episodes/\\k<index>
 
 # ------------------------------------------------------------
@@ -121,14 +109,12 @@ t: *title
 # novel_type 小説種別
 nt:
   - ^serialStatus::(?<novel_type>.+?)$
-  - '"serialStatus":"(?<novel_type>\w+)","publicEpisodeCount":(?<general_all_no>\d+),"totalCharacterCount":(?<length>\d+),"isCruel"'
 novel_type_string:
   RUNNING: 1
   COMPLETED: 3
 
 # general_all_no 掲載話数
 ga: ^publicEpisodeCount::(?<general_all_no>.+?)$
-#ga: null '"publicEpisodeCount":(?<general_all_no>\d+),"totalCharacterCount":\d+,"isCruel":'
 
 # story あらすじ
 s: *story
@@ -136,23 +122,18 @@ s: *story
 # general_firstup 初回掲載日
 gf:
   - ^publishedAt::(?<general_firstup>.+?)$
-  - '"publishedAt":"(?<general_firstup>[^"]+)",[^{}]*?"adminBookInformationUrl":'
 
 # novelupdated_at 小説の更新時刻
 nu:
   - ^editedAt::(?<novelupdated_at>.+?)$
-  - '"editedAt":"(?<novelupdated_at>[^"]+)"'
 
 # general_lastup 最新話掲載日
 gl:
   - ^lastEpisodePublishedAt::(?<general_lastup>.+?)$
-  - '"lastEpisodePublishedAt":"(?<general_lastup>[^"]+)",[^{}]*?"adminBookInformationUrl":'
 
 # writer 作者名
 w:
   - ^author::(?<writer>.+?)$
-  - </h1><div><div[^>]*><div[^>]*><a href="/users/[^>]+>(?<writer>.+?)</a></div></div></div>
 
 # length 文字数
 l: ^totalCharacterCount::(?<length>.+?)$
-#l: null '"totalCharacterCount":(?<length>\d+),"isCruel":'
