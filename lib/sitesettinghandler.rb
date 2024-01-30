@@ -25,7 +25,12 @@ class SiteSettingHandler
     def load_handler(handler_dir: HANDLER_DIR)
       Dir.glob(File.join(__dir__, handler_dir, "*#{HANDLER_EXT}")).sort.each { |path|
         @@current_path = path
-        require path
+        begin
+          require path
+        rescue ScriptError, StandardError => e
+          # 例外時、エラー内容は表示するが、処理は継続する
+          error e.full_message.lines[0..2]
+        end
         @@current_path = nil
       }
     end
