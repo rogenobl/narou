@@ -836,6 +836,7 @@ class Downloader
     ret = toc_page_max.times do |i|
       progressbar&.output(i + 1)
       subtitles.concat(get_subtitles(toc_source, old_toc))
+      save_raw_data(toc_source, {"index" => "0", "file_subtitle" => "index#{i+1}"}, ".html") rescue nil if toc_source
       break unless @setting.multi_match(toc_source, "next_toc")
       # 得られたURLをセットしてページ内容を取得する
       @setting["toc_url"] = @setting["next_url"]
