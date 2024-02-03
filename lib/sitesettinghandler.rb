@@ -6,34 +6,12 @@ require_relative "worker"
 class SiteSettingHandler
   HANDLER_DIR = "handler"
   HANDLER_EXT = ".rb"
-  DEBUG_PRINT = false
 
   @@klasses = {}
 
   class << self
     # @type : ハンドラのタイプ名
     attr_reader :type
-
-    #
-    # ハンドラを読み込む
-    #
-    # require時に呼び出される
-    # handler_dir (HANDLER_DIR) のファイルをrequireする
-    # requireするファイルは基本的にはこのクラスを継承したハンドラクラスを定義し、
-    # add_handlerを呼んで定義したクラスを登録する事で有効になる
-    #
-    def load_handler(handler_dir: HANDLER_DIR)
-      Dir.glob(File.join(__dir__, handler_dir, "*#{HANDLER_EXT}")).sort.each { |path|
-        @@current_path = path
-        begin
-          require path
-        rescue ScriptError, StandardError => e
-          # 例外時、エラー内容は表示するが、処理は継続する
-          error e.full_message.lines[0..2]
-        end
-        @@current_path = nil
-      }
-    end
 
     #
     # ハンドラを登録する
@@ -45,7 +23,6 @@ class SiteSettingHandler
     def add_handler(path_or_type: @@current_path, klass: self)
       @type = File.basename(path_or_type, HANDLER_EXT)
       @@klasses[@type] = klass
-      puts "->#{__method__} #{@type} #{klass}" if DEBUG_PRINT
     end
 
     #
@@ -79,7 +56,7 @@ class SiteSettingHandler
           value
         else
           # その他であれば正規表現として生成
-          _make_handler(parent, "regexp", value)
+          /#{value}/m
         end
       end
     end
@@ -111,12 +88,6 @@ class SiteSettingHandler
     @parent&.weakref_alive? ? @parent : nil
   end
 
-  # デバッグ表示用
-  def to_s
-    "<#{self.class} @@type=#{self.type} @value=#{@value}>"
-  end
-
-  #
   # valueを定義すれば変更できる
   # def value()
   #   self
@@ -142,6 +113,11 @@ class SiteSettingHandler
       keys.map(&:to_s)
     end
   end
+end
 
-  load_handler
+class EvalHandler < SiteSettingHandler
+  def match(source)
+    eval(@value, binding, parent&.path || "(nil)") # rubocop:disable Security/Eval
+  end
+  add_handler(path_or_type: "eval")
 end
