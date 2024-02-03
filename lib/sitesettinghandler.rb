@@ -119,13 +119,13 @@ class SiteSettingHandler
   #
   # valueを定義すれば変更できる
   # def value()
-  #   @value
+  #   self
   # end
   #
   # sourceから値が得られるかチェックし、得られるなら値をセットする
   # 継承したクラスにて実装する
   # def match(source)
-  #   nil
+  #   PseudoMatchData.new("post_match", {"key" => "value"})
   # end
 
   # matchが返すmatch_dataのためのクラス
