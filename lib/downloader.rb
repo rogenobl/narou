@@ -814,6 +814,8 @@ class Downloader
       @stream.error "何らかの理由により目次が取得できませんでした(#{e.message})"
     end
     false
+  ensure
+    save_raw_data(toc_source, {"index" => "0", "file_subtitle" => "index"}, ".html") rescue nil if toc_source
   end
 
   def get_subtitles_multipage(toc_source, old_toc)
@@ -834,6 +836,7 @@ class Downloader
     ret = toc_page_max.times do |i|
       progressbar&.output(i + 1)
       subtitles.concat(get_subtitles(toc_source, old_toc))
+      save_raw_data(toc_source, {"index" => "0", "file_subtitle" => "index#{i+1}"}, ".html") rescue nil if toc_source
       break unless @setting.multi_match(toc_source, "next_toc")
       # 得られたURLをセットしてページ内容を取得する
       @setting["toc_url"] = @setting["next_url"]
