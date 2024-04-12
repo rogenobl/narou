@@ -109,8 +109,8 @@ class DiffViewer
       if normalized_distance > 0.7
         # 双方の文字列があまりにも似ていない場合、編集部分をカラー化すると
         # 非常に見づらい表示になってしまうので、単純に削除・追加のみ装飾する
-        old_str = TermColorLight.escape(old_element)
-        new_str = TermColorLight.escape(new_element)
+        old_str = "<bold>#{TermColorLight.escape(old_element)}</bold>"
+        new_str = "<bold>#{TermColorLight.escape(new_element)}</bold>"
       else
         line_events.each do |e|
           os = TermColorLight.escape(e.old_element) rescue ""
@@ -122,17 +122,17 @@ class DiffViewer
           when "!"
             os = "<underline>#{os}</underline>" if os == " " || os == "　"
             ns = "<underline>#{ns}</underline>" if ns == " " || os == "　"
-            old_str += "<reverse><on_black><yellow>#{os}</yellow></on_black></reverse>"
-            new_str += "<reverse><on_black><yellow>#{ns}</yellow></on_black></reverse>"
+            old_str += "<reverse><bold><on_black><yellow>#{os}</yellow></on_black></bold></reverse>"
+            new_str += "<reverse><bold><on_black><yellow>#{ns}</yellow></on_black></bold></reverse>"
           when "-"
-            old_str += "<reverse>#{os}</reverse>"
+            old_str += "<reverse><bold><on_black><yellow>#{os}</yellow></on_black></bold></reverse>"
           when "+"
-            new_str += "<reverse>#{ns}</reverse>"
+            new_str += "<reverse><bold><on_black><yellow>#{ns}</yellow></on_black></bold></reverse>"
           end
         end
       end
-      result = "<bold><red>-#{old_str}</red></bold>\n" \
-               "<bold><green>+#{new_str}</green></bold>"
+      result = "<red>-#{old_str}</red>\n" \
+               "<green>+#{new_str}</green>"
     when "-"
       result = "<bold><red>-#{TermColorLight.escape(old_element)}</red></bold>"
     when "+"
