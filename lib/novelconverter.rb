@@ -747,13 +747,13 @@ class NovelConverter
       if @inspector.error? || @inspector.warning?
         stream_io.puts "<bold><yellow>―――― 小説にエラーもしくは警告が存在します ――――</yellow></bold>".termcolor
         stream_io.puts
-        @inspector.display(Inspector::ERROR | Inspector::WARNING)
+        @inspector.display(Inspector::ERROR | Inspector::WARNING, stream_io)
         stream_io.puts
       end
       if @inspector.info?
         stream_io.puts "<bold><yellow>―――― 小説の検査状況を表示します ――――</yellow></bold>".termcolor
         stream_io.puts
-        @inspector.display(Inspector::INFO)
+        @inspector.display(Inspector::INFO, stream_io)
         stream_io.puts
       end
     end
