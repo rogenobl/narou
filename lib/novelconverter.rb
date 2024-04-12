@@ -86,7 +86,7 @@ class NovelConverter
   end
 
   DAKUTEN_FROM = ["vertical_font_with_dakuten.css", "DMincho.ttf"]
-  DAKUTEN_TO = ["template/OPS/css_custom/vertical_font.css", "template/OPS/fonts/DMincho.ttf"]
+  DAKUTEN_TO = ["template/item/style_custom/font.css", "template/item/fonts/DMincho.ttf"]
   DAKUTEN_ERB = [true, false]
 
   def self.activate_dakuten_font_files
