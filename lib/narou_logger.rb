@@ -140,11 +140,11 @@ module Narou
     end
 
     def warn(str)
-      self.puts str
+      self.attn.puts str
     end
 
     def error(str)
-      self.puts "<bold><red>[ERROR]</red></bold> ".termcolor + str
+      self.attn.puts "<bold><red>[ERROR]</red></bold> ".termcolor + str
     end
 
     def logging?
@@ -189,6 +189,37 @@ module Narou
       end
       return str if format_timestamp_disabled
       str.gsub("\n", "\n#{Time.now.strftime(format_timestamp)} ")
+    end
+
+    def attn
+      self
+    end
+
+    def fix; end
+    def written(sep = "", stream = $stdout); end
+  end
+
+  class GatherStringIO < StringIO
+    attr_accessor :header, :footer
+
+    def initialize
+      super
+      @buffer = []
+    end
+
+    def fix
+      str = self.string
+      self.string = String.new
+      unless str.empty?
+        @buffer << header + str + footer
+      end
+    end
+
+    def written(sep = "", stream = $stdout)
+      arr = @buffer
+      @buffer = []
+      sep = sep + "\n"
+      stream.write(arr.join(sep) + sep) unless arr.empty?
     end
   end
 
@@ -275,6 +306,11 @@ module Narou
       super
       self.silent = true
       self.log_postfix = "_convert"
+      @attn_stream = GatherStringIO.new
+    end
+
+    def attn
+      silent? ? @attn_stream : self
     end
   end
 end

@@ -120,6 +120,7 @@ module Command
         status
       else
         Narou.concurrency_call do
+          Helper.print_horizontal_rule($stdout2)
           status = super(*argv, io: io)
           yield if block_given?
           status
@@ -200,6 +201,7 @@ module Command
         Narou.lock(target) do
           convert_novel_main(target, index)
         end
+        $stdout2.attn.fix
       end
     rescue Interrupt
       $stdout2.puts "変換を中断しました"
