@@ -10,6 +10,7 @@ require "io/console/size"
 require "unicode/display_width"
 require_relative "color"
 require_relative "inventory"
+require_relative "helper"
 
 if $disable_color
   class String
@@ -140,11 +141,11 @@ module Narou
     end
 
     def warn(str)
-      self.puts str
+      $stdout3.nonsilent(self).puts str
     end
 
     def error(str)
-      self.puts "<bold><red>[ERROR]</red></bold> ".termcolor + str
+      $stdout3.nonsilent(self).puts "<bold><red>[ERROR]</red></bold> ".termcolor + str
     end
 
     def logging?
@@ -189,6 +190,63 @@ module Narou
       end
       return str if format_timestamp_disabled
       str.gsub("\n", "\n#{Time.now.strftime(format_timestamp)} ")
+    end
+  end
+
+  class CollectStringIO < StringIO
+    attr_reader :header, :footer, :mutex
+
+    def initialize
+      super
+      self.header = ""
+      self.footer = ""
+      @mutex = Mutex.new
+      @buffer = []
+    end
+
+    def header=(str)
+      @header = _to_line(str)
+    end
+
+    def footer=(str)
+      @footer = _to_line(str)
+    end
+
+    def write(*obj)
+      if $stdout2.silent?
+        mutex.synchronize {super}
+      else
+        $stdout2.write(*obj)
+      end
+    end
+
+    def nonsilent(logger)
+      if logger == $stdout2 and logger.silent?
+        $stdout3
+      else
+        logger
+      end
+    end
+
+    def fix
+      return if !$stdout2.silent?
+      str = self.string
+      self.string = String.new("")
+      @buffer << header + str + footer unless str.empty?
+    end
+
+    def written(sep = Helper::HR_TEXT, stream = $stdout)
+      return if !$stdout2.silent?
+      arr = @buffer
+      @buffer = []
+      sep = _to_line(sep)
+      stream.write(sep + arr.join(sep)) unless arr.empty?
+    end
+
+    def _to_line(str)
+      str = str.to_s
+      str = str + "\n" if !str.empty? and !str.end_with?("\n")
+      str
     end
   end
 
@@ -295,3 +353,4 @@ else
   $stdout = Narou::Logger.new
   $stdout2 = $stdout
 end
+$stdout3 = Narou::CollectStringIO.new

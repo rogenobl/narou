@@ -172,6 +172,7 @@ module Command
     def after_process(target)
       if @options["mail"]
         Mail.execute!(target, io: $stdout2)
+        $stdout3.fix
       end
       if @options["freeze"]
         Freeze.execute!(target)

@@ -98,6 +98,7 @@ module Helper
   HR_TEXT = "―" * 35
 
   def print_horizontal_rule(io = $stdout)
+    $stdout3.written if io == $stdout
     io.puts HR_TEXT
   end
 

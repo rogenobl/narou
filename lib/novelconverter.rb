@@ -428,8 +428,9 @@ class NovelConverter
   end
 
   def display_header
-    stream_io.print "ID:#{@novel_id}　" if @novel_id
-    stream_io.puts "#{@novel_title} の変換を開始"
+    str_id = @novel_id ? "ID:#{@novel_id}　" : ""
+    stream_io.puts "#{str_id}#{@novel_title} の変換を開始"
+    $stdout3.header = "#{str_id}#{@novel_title} の変換"
   end
 
   def display_footer
@@ -738,6 +739,7 @@ class NovelConverter
       end
     end
 
+    stream_io = $stdout3.nonsilent(self.stream_io)
     if !@display_inspector
       unless @inspector.empty?
         @inspector.display_summary(stream_io)

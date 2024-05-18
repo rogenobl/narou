@@ -162,7 +162,7 @@ module Command
       pairs.each do |name, value|
         if settings[name].nil? || settings[name] != value
           settings[name] = value
-          $stdout2.puts "<bold><cyan>#{name} を #{value} に強制変更しました</cyan></bold>".termcolor
+          stream_io.warn "<bold><cyan>#{name} を #{value} に強制変更しました</cyan></bold>".termcolor
           modified = true
         end
       end
