@@ -112,6 +112,7 @@ module Command
       EOS
     end
 
+    @@first_concurrency_exec = true
     def self.execute!(*argv, io: $stdout2, sync: false)
       if sync
         # cocurrency が有効だろうが必ず同期実行する
@@ -120,7 +121,8 @@ module Command
         status
       else
         Narou.concurrency_call do
-          Helper.print_horizontal_rule($stdout2)
+          Helper.print_horizontal_rule($stdout2) unless @@first_concurrency_exec
+          @@first_concurrency_exec = false
           status = super(*argv, io: io)
           yield if block_given?
           status
@@ -201,7 +203,7 @@ module Command
         Narou.lock(target) do
           convert_novel_main(target, index)
         end
-        $stdout2.attn.fix
+        $stdout3.fix
       end
     rescue Interrupt
       $stdout2.puts "変換を中断しました"

@@ -134,9 +134,16 @@ if Narou.concurrency_enabled?
   at_exit do
     next if Narou.web?
     # ここまでたどり着いた時点でダウンロードとかは終わってるので変換ログを普通に表示する
-    $stdout2.attn.fix
-    $stdout2.attn.written
-    $stdout2.silent = false
+    require_relative "helper"
+    $stdout3.mutex.synchronize do
+      $stdout3.fix
+      if Narou::Worker.instance.size.zero?
+        $stdout3.written
+      else
+        Helper.print_horizontal_rule
+      end
+      $stdout2.silent = false
+    end
     Narou::Worker.join
     Narou::Worker.stop
     Command::Convert.display_sending_error_list
