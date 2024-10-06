@@ -62,6 +62,10 @@ module Command
       @opt.on("--all-clean", "凍結済を除く全小説の差分データを削除する") {
         @options["all-clean"] = true
       }
+      @opt.on("--recent", "前回（直前から3時間以内）に更新した小説の差分を表示する") {
+     
+        @options["recent"] = true
+      }
       @opt.on("--no-tool", "外部差分ツールを使用しない") {
         @options["no-tool"] = true
       }
@@ -115,6 +119,10 @@ module Command
       end
       if @options["all-clean"]
         clean_all_diff
+        return
+      end
+      if @options["recent"]
+        diff_recent
         return
       end
       @difftool = Inventory.load("global_setting", :global)["difftool"]
@@ -299,6 +307,44 @@ module Command
         next unless File.exist?(cache_root_dir)
         FileUtils.remove_entry_secure(cache_root_dir)
         stream_io.puts "#{data["title"]} の差分を削除しました"
+      end
+    end
+
+    def diff_recent
+      # 比較に用いるメソッドを決定しておく
+      @difftool = Inventory.load("global_setting", :global)["difftool"]
+      method_diff = if @difftool.! || @options["no-tool"]
+                      self.method(:display_diff_on_oneself)
+                    else
+                      self.method(:exec_difftool)
+                    end
+      # update(Time) 以降を前回更新分とする
+      update = nil
+      first = true
+      Database.instance.sort_by("last_update").each do |data|
+        id = data["id"]
+        last_update = data["last_update"]
+        if ! update
+          # 最後の更新日時を規準として3時間以内を前回更新分と決め打ち
+          update = last_update - 3*60*60
+        elsif last_update < update
+          # last_update順なのでupdate以前になったら終了
+          break
+        end
+        list = get_sorted_cache_list(id)
+        # 差分がなければ次へ
+        next if list.blank?
+        version_string = File.basename(list[0])
+        # 差分が前回更新時でなければ次へ
+        next if version_string_to_time(version_string) < update
+        @options["view_diff_version"] = version_string
+        @novel_data = data
+        Helper.print_horizontal_rule(stream_io) unless first
+        first = false
+        method_diff.(id)
+      end
+      if first
+        stream_io.puts "前回のアップデートは最新話のみのようです"
       end
     end
 
